@@ -1,0 +1,26 @@
+//everything unde app.component.ts//
+
+
+
+import { Component } from '@angular/core';
+
+
+
+  @Component({
+
+    selector:"app-product-list",
+    template:'<div><button class = "btn btn-danger">Click Me</button><div *ngFor="let product of products"><h3>{{product.brand | uppercase}} {{product.model | lowercase}}</h3><b>{{product.price | currency}}</b><div>In stcok:<input type="checkbox" diabled="true"[checked]="product.instock" /><div>{{product.lastUpdated | date:"dd-MMM-yyyy"}}</div> <hr/></div></div>'
+  
+  })
+
+
+  export class ProductListComponent{
+
+    products : any[] = [{id :1, brand:"nokia", model:"6.1", price:5000,instock:true},
+
+    {id :2, brand:"samsung", model:"s9", price:15000,instock:false},
+
+    {id :3, brand:"iphone", model:"iphone X", price:55000,instock:true}];
+
+
+  }
