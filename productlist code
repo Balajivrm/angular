@@ -1,0 +1,101 @@
+//use this code under product.list.component
+
+
+
+import { Component } from '@angular/core';
+
+
+
+@Component({
+    selector:'app-product-list',
+    template:`<h1>Product List</h1>
+
+    <div>
+    <div *ngFor="let product of products">
+    <h3>{{product.brand | uppercase}}{{product.model | lowercase}}</h3>
+    <b>{{product.price | currency}}</b>
+    <div>InStock : <input type="checkbox" disabled="true"[checked]="product.inStock"/></div>
+   <div>{{product.lastUpdated | date:'dd-MMM-yyyy'}}</div>
+        <hr/>
+    </div>
+    </div>`
+
+
+})
+
+
+export class ProductListComponent{
+    
+products : any[]=[{id:1, brand:"nokia", model:"6.1",price: 5000, inStock:true,lastUpdated:Date.now},
+{id :2, brand:"Samsung",model:"s9",price:20000, inStock:false},
+{id :2, brand:"Apple",model:"Iphone X",price:20000, inStock:true},];
+
+}
+
+
+
+
+
+
+
+
+//use tis code unde app.component
+
+
+import { Component } from '@angular/core';
+
+
+
+@Component({
+
+    template:`<app-product-list></app-product-list>`,
+    selector :'app-root'
+    
+})
+
+export class AppComponent {
+
+
+
+}
+
+
+
+
+
+// use this code under app.module
+
+import { NgModule } from '@angular/core';
+import { BrowserModule} from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
+import { ProductListComponent } from './product-list/product-list.component';
+
+
+@NgModule({
+
+    imports:[BrowserModule],
+    declarations:[AppComponent,HomeComponent,AboutComponent,ContactComponent,ProductListComponent],
+    bootstrap:[AppComponent,HomeComponent],
+})
+
+
+export class AppModule{
+
+}
+
+
+
+//use tis code under style.css
+
+
+/* You can add global styles to this file, and also import other style files */
+.red{
+    background-color: red;
+}
+.green{
+    color:green;
+
+}
