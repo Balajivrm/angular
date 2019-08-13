@@ -1,0 +1,60 @@
+//use tis code under product.component.ts
+
+
+
+import { Component, Input } from '@angular/core';
+
+
+
+@Component({
+    selector:"app-product",
+    template:`
+    <div class="card">
+    <div class="card-body">
+    <h3 class="card-title">{{product.brand | uppercase}}{{product.model | lowercase}}
+    <b>{{product.price | currency}}</b>
+    <div >InStock:<input type="checkbox" disabled="true"[checked]="product.instock">
+    <hr/>
+    </div> `
+})
+
+
+export class ProductComponent{
+    @Input()
+    product:any;
+}
+
+
+
+
+//use tis under product-list.coponent.ts
+
+
+import { Component } from '@angular/core';
+
+
+
+@Component({
+    selector:'app-product-list',
+    template:`
+    
+    <div class ="container">
+    <h1>Product List</h1>
+   
+    <div *ngFor="let product of products">
+
+    <app-product [product]="product"></app-product>
+    </div>
+    </div>`
+
+
+})
+
+
+export class ProductListComponent{
+    
+products : any[]=[{id:1, brand:"nokia", model:"6.1",price: 5000, inStock:true,lastUpdated:Date.now},
+{id :2, brand:"Samsung",model:"s9",price:20000, inStock:false},
+{id :2, brand:"Apple",model:"Iphone X",price:20000, inStock:true},];
+
+}   
