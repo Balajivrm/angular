@@ -1,0 +1,83 @@
+write this code under product.component.ts
+
+
+
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+    selector:'app-user-list',
+    template:`
+    <div class = "container">
+    <h1>User list<h1>
+    <div *ngFor="let user of users">
+    <h6>{{user.login}}</h6>
+    <img class = "img-thumbnail" [src]="user.avatar_url"alt="image" width="150" height="120"/>
+<hr/>
+    </div>`
+})
+
+export class UserListComponent{
+    users : any;
+
+    constructor(http:HttpClient){
+        http.get("https://api.github.com/users")
+.subscribe(res => {
+    this.users = res;
+    });
+}
+}
+
+
+
+
+
+//write this code under app.module.ts
+
+
+import { NgModule } from '@angular/core';
+import { BrowserModule} from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
+import { ProductListComponent } from './product-list/product-list.component';
+//import { ProductComponent } from './product/product.component';
+import { ProductComponent } from './product/product.component';
+import { UserListComponent } from './userlist/user-list.component';
+
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+
+    imports:[BrowserModule,HttpClientModule],
+    declarations:[AppComponent,HomeComponent,AboutComponent,ContactComponent,ProductListComponent,ProductComponent,UserListComponent],
+    bootstrap:[AppComponent],
+})
+
+
+export class AppModule{
+
+}
+
+
+
+write this code under style.css
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MyAngularSample</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+ <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
