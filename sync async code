@@ -1,0 +1,56 @@
+//write this for sync code
+
+
+
+function add(a,b){
+a++;
+b++;
+a+=10;
+b+=10;
+console.log(a+b);
+}
+add(10,20)
+
+
+
+///////or////// write this for sync code
+
+
+ function add(a,b){
+    a++;
+    b++;
+    a+=10;
+    b+=10;
+
+    return a+b;
+
+}
+
+var res = add(10,20);
+
+console.log(res);
+
+
+
+////write this under async code
+
+
+ function addAsync(a,b,cb){
+     a++;
+     b++;
+     console.log("Started");
+
+ 
+
+ setTimeout(function(){
+     var c = a+b;
+     console.log("calc completed");
+     cb(c);
+    } ,2000);
+
+ console.log("stopped");
+ }
+ function callback(res){
+    console.log(res);
+}
+addAsync(10,20,callback);
