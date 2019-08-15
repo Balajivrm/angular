@@ -1,0 +1,139 @@
+////// console.logger.ts
+
+
+import { Injectable } from '@angular/core';
+
+
+
+@Injectable()
+
+export class ConsoleLogger{
+log(msg:any){
+    console.log(msg);
+}
+
+warn(msg:any){
+    console.warn(msg);
+
+}
+
+error (msg:any){
+
+    console.error(msg);
+    
+}
+
+}
+
+
+
+/////file.logger.ts
+
+
+
+import { Injectable } from '@angular/core';
+
+
+@Injectable()
+
+
+export class FileLogger{
+
+    log(msg:any){
+        console.log(msg);
+
+    }
+
+    warn(msg:any){
+        console.log(msg);
+    }
+
+    error(msg:any){
+
+        console.error(msg);
+    }
+}
+
+
+
+
+
+
+////////////app.module.ts
+
+
+
+import { NgModule } from '@angular/core';
+import { BrowserModule} from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
+import { ProductListComponent } from './product-list/product-list.component';
+//import { ProductComponent } from './product/product.component';
+import { ProductComponent } from './product/product.component';
+import { UserListComponent } from './userlist/user-list.component';
+
+import { HttpClientModule } from '@angular/common/http';
+import { ProductService } from './services/product.service';
+import { ConsoleLogger } from './services/console.logger';
+import { FileLogger } from './services/file.logger';
+
+@NgModule({
+
+    imports:[BrowserModule,HttpClientModule],
+    declarations:[AppComponent,HomeComponent,AboutComponent,ContactComponent,ProductListComponent,ProductComponent,UserListComponent],
+    providers:[ProductService,{provide:ConsoleLogger,useClass:FileLogger}],
+    bootstrap:[AppComponent],
+})
+
+
+export class AppModule{
+
+}
+
+
+
+
+
+
+///////product-list.component.ts
+
+
+import { Component } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { ProductService } from '../services/product.service';
+import { ConsoleLogger } from '../services/console.logger';
+
+@Component({
+    selector:'app-product-list',
+    template:`
+    
+    <div class ="container">
+    <h1>Product List</h1>
+   
+    <div *ngFor="let product of products">
+
+    <app-product [product]="product"></app-product>
+    </div>
+    </div>`
+
+
+})
+
+
+export class ProductListComponent{
+    products : any;
+
+    constructor(svc : ProductService, Logger:ConsoleLogger){
+        Logger.warn("loading data");
+//    Http.get("http://exp-rest-api.herokuapp.com/api/products")
+//var svc = new ProductService(Http);  
+svc.get()
+.subscribe(res=>this.products=res["data"],err=>console.log(err));
+        Logger.log("loaded");    
+    }
+}
+
+
+
