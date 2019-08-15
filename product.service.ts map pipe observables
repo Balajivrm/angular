@@ -67,3 +67,35 @@ svc.get()
     )
     }
 }
+
+
+
+
+//////////
+
+observables using code...
+
+
+
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map , retry} from 'rxjs/operators';
+import { pipe, Observable } from 'rxjs';
+
+export class ProductService{
+
+
+   // private http:HttpClient;
+
+    constructor(private http:HttpClient){
+
+     //   this.http=http;
+
+    }
+    get():Observable<any>
+    
+    {
+        return this.http.get("http://exp-rest-api.herokuapp.com/api/products");
+        pipe(map(res=>res['data']));
+    }
+}
