@@ -1,0 +1,21 @@
+//////code for observable stream with time interval 
+
+
+
+var Observable = require ('rxjs').Observable;
+var obs=new Observable(function(o) {
+o.next(1);
+o.next(2);
+o.next(3);
+// o.next(4);
+// o.next(5);
+
+setTimeout(function(){o.next(4);},1000);
+setTimeout(function(){o.next(5);},2000);
+setTimeout(function(){o.next(6);},3000);
+setTimeout(function(){o.next(7);},4000);
+//setTimeout(function(){o.complete(8);},5000);
+setTimeout(function(){o.error('failed');},6000);
+});
+
+obs.subscribe(function (res) { console.log(res); });
