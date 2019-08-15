@@ -1,0 +1,33 @@
+/////alternative code for async promise extends2
+
+
+
+
+
+function getData(){
+
+    var p= new Promise(function(res,rej){
+
+        setTimeout(function(){
+            rej ("failed to calculate");
+
+        },2000);
+    });
+return p;
+
+
+}
+
+async function fun(){
+    try{
+
+        var result = await getData();
+        console.log(result);
+
+    }
+    catch(err){
+        console.log(err);
+
+    }
+}
+fun();
