@@ -1,0 +1,32 @@
+//////filtering values using pipe
+
+
+
+var Observable = require ('rxjs').Observable;
+
+var {filter,map}=require ('rxjs/operators');
+var obs=new Observable(function(o) {
+o.next(1);
+o.next(2);
+o.next(3);
+// o.next(4);
+// o.next(5);
+
+setTimeout(function(){o.next(4);},1000);
+setTimeout(function(){o.next(5);},2000);
+setTimeout(function(){o.next(6);},3000);
+setTimeout(function(){o.next(7);},4000);
+setTimeout(function(){o.next(8);},5000);
+setTimeout(function(){o.next(9);},6000);
+setTimeout(function(){o.next(10);},7000);
+setTimeout(function(){o.complete(11);},8000);
+});
+
+obs
+.pipe(filter(i => i%2 === 0),map(x=> x+2))
+.subscribe(function (res) { console.log(res);
+()=>console.log("completed") 
+});
+
+
+
