@@ -1,0 +1,84 @@
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-footer',
+  template: `
+    <footer class ="container navbar navbar-expand-lg bg-dark">
+
+    &copy;2018 Myproducts.com
+    </footer>
+  `,
+
+})
+export class FooterComponent {
+
+}
+
+
+
+//////adding routermodule in app.module.ts
+
+import { NgModule } from '@angular/core';
+import { BrowserModule} from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
+import { ProductListComponent } from './product-list/product-list.component';
+import { ProductComponent } from './product/product.component';
+import { UserListComponent } from './userlist/user-list.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ProductService } from './services/product.service';
+import { ConsoleLogger } from './services/console.logger';
+import { FileLogger } from './services/file.logger';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+import{RouterModule, Route} from '@angular/router';
+
+
+   
+const ROUTES=[{path:'', component:HomeComponent},
+{path:'about', component:AboutComponent},
+{path:'contact', component:ContactComponent},
+{path:'products', component:ProductListComponent}];
+
+
+@NgModule({
+
+    imports:[BrowserModule,HttpClientModule,RouterModule.forRoot(ROUTES)],
+
+
+    declarations:[AppComponent,HomeComponent,AboutComponent,ContactComponent,
+        ProductListComponent,ProductComponent,UserListComponent, 
+        HeaderComponent, FooterComponent],
+    
+        
+        providers:[ProductService,{provide:ConsoleLogger,useClass:FileLogger}],
+    
+        bootstrap:[AppComponent],
+})
+
+
+export class AppModule{}
+
+
+
+//////changes in app.component.ts
+
+
+import { Component } from '@angular/core';
+
+
+
+@Component({
+
+    template:`
+    <app-header>   </app-header>
+    <main class="container">
+    <router-outlet></router-outlet>
+    <app-footer>`,
+    selector :"app-root"
+    
+})
+
+export class AppComponent{}
