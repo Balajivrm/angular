@@ -1,0 +1,152 @@
+/////////////product detail
+
+
+
+import { Component } from '@angular/core';
+import { ProductService } from '../services/product.service';
+
+
+@Component({
+    selector:'app-product-deatil',
+    template:`<h1>Product Detail</h1>
+
+<div class="col-sm-6">
+
+
+<div class = "card">
+<div class = "card-header">
+{{product.brand }} {{product.model}}
+<div class="card-body">
+<div>InStock{{product.InStock}}</div>
+<div>{{product.price | currency}}</div>
+</div>
+<div classs = "card-footer">
+{{product.lastupdated | date }}
+</div>
+</div>
+   `
+
+    
+})
+
+export class ProductDetailComponent{
+
+    property:any;
+constructor(svc:ProductService){
+    const id="5d2db8c4afeb3a00140fd865";
+    svc.getById(id)
+    .subscribe(res => this.property=res, err => console.log(err));
+}
+}
+
+
+
+////app.module.ts
+
+
+
+import { NgModule, Component } from '@angular/core';
+import { BrowserModule} from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
+import { ProductListComponent } from './product-list/product-list.component';
+import { ProductComponent } from './product/product.component';
+import { UserListComponent } from './userlist/user-list.component';
+import { HttpClientModule } from '@angular/common/http';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+import { ServiceModule } from './services/ServiceModule';
+import { RoutingModule } from './router/routing.module';
+import { ProductDetailComponent } from './product-detail/product-detail.component';
+   
+
+@NgModule({
+
+    imports:[BrowserModule,HttpClientModule,ServiceModule,RoutingModule],
+
+
+    declarations:[AppComponent,HomeComponent,AboutComponent,ContactComponent,
+        ProductListComponent,ProductComponent,UserListComponent, 
+        HeaderComponent, FooterComponent,ProductDetailComponent],
+    
+        
+        
+        bootstrap:[AppComponent],
+})
+
+
+export class AppModule{}
+
+
+
+
+
+
+//////routing module
+
+
+import { NgModule } from '@angular/core';
+import{RouterModule, Route} from '@angular/router';
+import { HomeComponent } from '../home/home.component';
+import { AboutComponent } from '../about/about.component';
+import { ContactComponent } from '../contact/contact.component';
+import { ProductListComponent } from '../product-list/product-list.component';
+import { ProductDetailComponent } from '../product-detail/product-detail.component';
+
+
+const ROUTES=[{path:'', component:HomeComponent},
+{path:'about', component:AboutComponent},
+{path:'contact', component:ContactComponent},
+{path:'products', component:ProductListComponent},
+{path:'products/:id',component:ProductDetailComponent},
+{path:'**',component:HomeComponent}];
+
+@NgModule({
+imports:[ RouterModule.forRoot(ROUTES)],
+exports :[RouterModule]
+})
+
+export class RoutingModule{}
+
+
+/////product service.ts
+
+
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map , retry} from 'rxjs/operators';
+import { pipe, Observable } from 'rxjs';
+
+export class ProductService{
+
+
+   // private http:HttpClient;
+
+    constructor(private http:HttpClient){ //dependancy injection
+        
+
+
+        
+     //   this.http=http;
+
+    }
+    get():Observable<any>
+    
+    {
+        return this.http.get("http://exp-rest-api.herokuapp.com/api/products");
+        pipe(map(res=>res['data']));
+    }
+
+    getById(id:string):Observable<any> {
+        return this.http.get('http://exp-rest-api.herokuapp.com/api/products/5d2db8c4afeb3a00140fd865');
+    }
+}
+
+
+
+/////product detail component
+
+
+
