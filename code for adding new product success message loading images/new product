@@ -1,0 +1,295 @@
+/////under product-list component.ts
+
+import { Component } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { ProductService } from '../services/product.service';
+import { ConsoleLogger } from '../services/console.logger';
+
+@Component({
+    selector:'app-product-list',
+    template:`
+    
+    <div class ="container">
+    <h1>Product List</h1>
+<button class="btn btn-primary">Add New Product</button>   
+    <div *ngFor="let product of products">
+
+    <app-product [product]="product"></app-product>
+    </div>
+    </div>`
+
+})
+
+export class ProductListComponent{
+    products : any;
+
+    constructor(svc : ProductService, Logger:ConsoleLogger){
+        Logger.warn("loading data");
+//Http.get("http://exp-rest-api.herokuapp.com/api/products")
+//var svc = new ProductService(Http);  
+svc.get()
+.subscribe(res=>this.products=res["data"],err=>console.log(err));
+        Logger.log("loaded");   
+    }
+}
+
+
+
+//////app.module.ts
+
+import { NgModule, Component } from '@angular/core';
+import { BrowserModule} from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
+import { ProductListComponent } from './product-list/product-list.component';
+import { ProductComponent } from './product/product.component';
+import { UserListComponent } from './userlist/user-list.component';
+import { HttpClientModule } from '@angular/common/http';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+import { ServiceModule } from './services/ServiceModule';
+import { RoutingModule } from './router/routing.module';
+import { ProductDetailComponent } from './product-detail/product-detail.component';
+import { TimePipe } from './services/time.pipe';
+import { NewProductComponent } from './services/new-product/new-product.component';
+import {FormsModule}from '@angular/forms';
+
+
+@NgModule({
+
+    imports:[BrowserModule,HttpClientModule,ServiceModule,FormsModule,RoutingModule],
+
+
+    declarations:[AppComponent,HomeComponent,AboutComponent,ContactComponent,
+        ProductListComponent,ProductComponent,UserListComponent, 
+        HeaderComponent, FooterComponent,ProductDetailComponent,TimePipe,NewProductComponent],
+    
+        
+        
+        bootstrap:[AppComponent],
+})
+
+
+export class AppModule{}
+
+
+
+//////styles.css
+
+
+/* You can add global styles to this file, and also import other style files */
+.red{
+    background-color: red;
+}
+.green{
+    color:green;
+
+}
+.circle-img{
+    border-radius: 50px;
+}
+.navbar-brand,.navbar ul li a, footer{
+
+    color:#ffff !important;
+}
+
+.loader{
+position: relative;
+margin-top: 30px;
+border: 1px solid gray;
+height: 35px;
+widows: 150px;
+
+}
+
+
+//////new-product.component.ts
+
+
+
+import { Component } from '@angular/core';
+import { ProductService } from '../product.service';
+import { Router } from '@angular/router';
+
+
+@Component({
+ template:`<h1>New Product</h1>
+
+<div class ="col-md-6">
+<div *ngIf="success" class="alert alert-success">Successfully Saved!!</div>
+<div *ngIf="failed" class ="alert alert-danger">Failed to save data.Please try again</div>
+<div class = " form-group"> 
+<input type="text" placeholder = "Brand" class= "from-control"[(ngModel)]="product.brand"/>
+</div>
+<div class = " form-group"> 
+<input type="text" placeholder = "Model" class= "from-control"[(ngModel)]="product.model"/>
+</div>
+<div class = " form-group"> 
+<input type="text" placeholder = "Price" class= "from-control"[(ngModel)]="product.price"/>
+</div>
+<div class = " form-group"> 
+<input type="checkbox" [(ngModel)]="product.inStock"/>
+InStock
+</div>
+<div class = " form-group"> 
+<button class="btn btn-success" (click)="onSave()">
+Save Product
+<img *ngIf="loading" src="/assets/images/loading.gif" width ="30" height ="30"/>
+</button>
+</div>
+</div>
+
+ `
+})
+
+export class NewProductComponent{
+
+    product : any= {};
+success:boolean;
+    failed: boolean;
+    loading:boolean;
+
+constructor(private svc:ProductService, private router:Router){}
+
+    onSave(){
+        this.loading=true;
+ this.svc.save(this.product)
+        .subscribe(res => {
+            this.success = true;
+            this.failed=false;
+            this.product={};
+            this.loading=false;
+            this.router.navigate(["/products"]);
+
+        
+    }, err => {
+        this.failed =true;
+        this.success=false;
+        this.loading=false;
+    });
+}}
+
+
+
+
+////product services.component.ts
+
+
+
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map , retry} from 'rxjs/operators';
+import { pipe, Observable } from 'rxjs';
+
+export class ProductService{
+
+
+   // private http:HttpClient;
+
+    constructor(private http:HttpClient){ //dependancy injection
+        
+
+
+        
+     //   this.http=http;
+
+    }
+    get():Observable<any>
+    
+    {
+        return this.http.get("http://exp-rest-api.herokuapp.com/api/products");
+        pipe(map(res=>res['data']));
+    }
+
+    getById(id:string):Observable<any> {
+        return this.http.get('http://exp-rest-api.herokuapp.com/api/products/5d2db8c4afeb3a00140fd865');
+    }
+
+save (product:any):Observable<any>{
+return this.http.post('http://exp-rest-api.herokuapp.com/api/products',product);
+}
+
+}
+
+
+///////routing module.ts
+
+
+import { NgModule } from '@angular/core';
+import {RouterModule, Route} from '@angular/router';
+import { HomeComponent } from '../home/home.component';
+import { AboutComponent } from '../about/about.component';
+import { ContactComponent } from '../contact/contact.component';
+import { ProductListComponent } from '../product-list/product-list.component';
+import { ProductDetailComponent } from '../product-detail/product-detail.component';
+import { NewProductComponent } from '../services/new-product/new-product.component';
+
+
+const ROUTES=[{path: '', component:HomeComponent},
+{path:'about', component:AboutComponent},
+{path:'contact', component:ContactComponent},
+{path:'products', component:ProductListComponent},
+{path:'products/new',component:NewProductComponent},
+{path:'products/:id',component:ProductDetailComponent},
+
+
+{path:'**', redirectTo:''}];
+
+
+@NgModule({
+imports:[ RouterModule.forRoot(ROUTES)],
+exports :[RouterModule]
+})
+
+export class RoutingModule{}
+
+
+///////product-detail.component.ts
+
+
+import { Component } from '@angular/core';
+import { ProductService } from '../services/product.service';
+import { ActivatedRoute } from '@angular/router';
+import * as moment from 'moment';
+
+@Component({
+    selector:'app-product-deatil',
+    template:`<h1>Product Detail</h1>
+
+<div class="col-sm-6">
+<div class = "card">
+<div class = "card-body">
+<div>brand{{product.brand}}</div>
+<div>{{product.model}}</div>
+<div>InStock{{product.InStock}}</div>
+<div>price{{product.price | currency}}</div>
+{{product.lastupdated | date }}
+({{(product.lastUpdated | time)}})
+</div>
+</div>
+</div>
+
+`
+
+    
+})
+
+export class ProductDetailComponent{
+
+
+    property:any;
+constructor(svc:ProductService, route : ActivatedRoute){
+    const id= route.snapshot.params.id;
+    svc.getById(id)
+    .subscribe(res => this.property=res, err => console.log(err));
+
+}
+
+getRelativeTime(date){
+    return moment(date).fromNow();
+    } 
+}
+
+
