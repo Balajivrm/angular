@@ -1,0 +1,235 @@
+////////new-product.component.ts
+
+
+import { Component } from '@angular/core';
+import { ProductService } from '../product.service';
+import { Router } from '@angular/router';
+
+
+@Component({
+ template:`<h1>New Product</h1>
+
+<div class ="col-md-6">
+<div *ngIf="success" class="alert alert-success">Successfully Saved!!</div>
+<div *ngIf="failed" class ="alert alert-danger">Failed to save data.Please try again</div>
+
+
+<form novalidate #frm="ngForm">
+
+<div class = " form-group"> 
+<input #brand="ngModel" minlength="3" maxlength="10" required  name="brand" type="text" placeholder = "Brand" class= "form-control"[(ngModel)]="product.brand"/>
+<span *ngIf="brand.touched && brand.errors?.required" class = "text-danger">Required </span>
+<span *ngIf="brand.touched && brand.errors?.minlength" class = "text-danger">Min 3 chars </span>
+<span *ngIf="brand.touched && brand.errors?.maxlength" class = "text-danger">Max 10 chars</span>
+</div>
+
+<div class="form-group"> 
+<input #model="ngModel" minlength="3" maxlength="10" required name="model" type="text" placeholder = "Model" class= "form-control"[(ngModel)]="product.model"/>
+<span *ngIf="model.touched && model.errors?.required" class = "text-danger">Required </span>
+<span *ngIf="model.touched && model.errors?.minlength" class = "text-danger">Min 3 chars </span>
+<span *ngIf="model.touched && model.errors?.maxlength" class = "text-danger">Max 10 chars </span>
+</div>
+
+<div class = " form-group"> 
+<input #price="ngModel" minlength="3" maxlength="10" required name="price" type="text" placeholder = "Price" class= "form-control"[(ngModel)]="product.price"/>
+<span *ngIf="price.touched && price.errors?.required" class = "text-danger">Required </span>
+<span *ngIf="price.touched && price.errors?.minlength" class = "text-danger">Min 3 chars </span>
+<span *ngIf="price.touched && price.errors?.maxlength" class = "text-danger">Max 10 chars </span>
+</div>
+
+<div class = " form-group"> 
+<input name="inStock" type="checkbox" [(ngModel)]="product.inStock"/>
+InStock
+</div>
+
+
+<div class = " form-group"> 
+<input #phone="ngModel" name ="phone" type="textbox"[(ngModel)]="product.phone" class="form-control"
+pattern ="[0-9]{3}[0-9]{3}[0-9]{4}"placeholder="phone"/>
+<span *ngIf="phone.errors?.pattern" class="text-danger">Invalid Phone Number</span>
+</div>
+<div class = " form-group"> 
+<button class="btn btn-success" (click)="onSave()"[disabled]="frm.invalid">
+Save Product</button>
+</div>
+
+ `
+})
+
+export class NewProductComponent{
+
+    product : any= {};
+success:boolean;
+    failed: boolean;
+
+constructor(private svc:ProductService, private router:Router){}
+
+    onSave(){
+ this.svc.save(this.product)
+
+ .subscribe(res => {
+            this.success = true;
+            this.failed=false;
+            this.product={};
+            this.router.navigate(["/products"]);
+
+        
+    }, err =>{
+        this.failed=true;
+        this.success=false;
+    });
+}}
+
+
+
+//////service.modules.ts
+
+
+import { NgModule } from '@angular/core';
+import { ProductService } from './product.service';
+import { ConsoleLogger } from './console.logger';
+import { FileLogger } from './file.logger';
+@NgModule({
+    providers: [ProductService, { provide: ConsoleLogger, useClass: FileLogger }],
+})
+export class ServiceModule {
+}
+
+
+
+//////styles.css
+
+/* You can add global styles to this file, and also import other style files */
+.red{
+    background-color: red;
+}
+.green{
+    color:green;
+
+}
+.circle-img{
+    border-radius: 50px;
+}
+.navbar-brand,.navbar ul li a, footer{
+
+    color:#ffff !important;
+}
+
+.loader{
+position: relative;
+margin-top: 30px;
+border: 1px solid gray;
+height: 35px;
+widows: 150px;
+
+}
+
+input.ng-invalid{
+    border-left: 5px solid brown;
+}
+
+
+input.ng-valid{
+    border-left: 5px solid green;
+}
+
+
+
+
+/////app.module.ts
+
+
+import { NgModule, Component } from '@angular/core';
+import { BrowserModule} from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
+import { ProductListComponent } from './product-list/product-list.component';
+import { ProductComponent } from './product/product.component';
+import { UserListComponent } from './userlist/user-list.component';
+import { HttpClientModule } from '@angular/common/http';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+import { ServiceModule } from './services/ServiceModule';
+import { RoutingModule } from './router/routing.module';
+import { ProductDetailComponent } from './product-detail/product-detail.component';
+import { TimePipe } from './services/time.pipe';
+import { NewProductComponent } from './services/new-product/new-product.component';
+import {FormsModule}from '@angular/forms';
+
+
+@NgModule({
+
+    imports:[BrowserModule,HttpClientModule,ServiceModule,FormsModule,RoutingModule],
+
+
+    declarations:[AppComponent,HomeComponent,AboutComponent,ContactComponent,
+        ProductListComponent,ProductComponent,UserListComponent, 
+        HeaderComponent, FooterComponent,ProductDetailComponent,TimePipe,NewProductComponent],
+    
+        
+        
+        bootstrap:[AppComponent],
+})
+
+
+export class AppModule{}
+
+
+
+/////product.component.ts
+
+
+import { Component, Input } from '@angular/core';
+import * as moment from'moment';
+
+
+@Component({
+    selector:"app-product",
+    template:`
+    <div class="card">
+    <div class="card-body">
+   <a routerLink="/products/{{product._id}}"> <h3 class="card-title"> {{product.brand | uppercase}}{{product.model | lowercase}}</h3></a>
+    <b>{{product.price | currency}}</b>
+    <div >InStock:<input type="checkbox" disabled="true"[checked]="product.instock">
+    <div>{{product.lastUpdated | date:'MMM-dd-yyyy hh:mm:ss a'}}</div>
+    <div>{{product.lastUpdated | time}}</div>
+
+
+    </div> `
+})
+
+
+export class ProductComponent{
+    @Input()
+    product:any;
+
+    getRelativeTime(date){
+        return moment(date).fromNow();
+        }
+
+
+}
+
+
+
+/////app.component.ts
+
+
+import { Component } from '@angular/core';
+
+
+
+@Component({
+
+    template:`
+    <app-header>   </app-header>
+    <main class="container">
+    <router-outlet></router-outlet>
+    <app-footer>`,
+    selector :"app-root"
+    
+})
+
+export class AppComponent{}
