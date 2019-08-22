@@ -1,0 +1,190 @@
+//////product.component.ts
+
+
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import * as moment from'moment';
+import { ProductService } from '../services/product.service';
+
+
+@Component({
+    selector:"app-product",
+    template:`
+    <div class="card">
+    <div class="card-body">
+    <img class="img img-thumbnail" width="120" height = "120"[src]="product.image"/>
+    <a routerLink="/products/{{product._id}}"> <h3 class="card-title"> {{product.brand | uppercase}}{{product.model | lowercase}}</h3></a>
+    <b>{{product.price | currency}}</b>
+    <div >InStock:<input type="checkbox" disabled="true"[checked]="product.instock">
+    <div>{{product.lastUpdated | date:'MMM-dd-yyyy hh:mm:ss a'}}</div>
+    <div>{{product.lastUpdated | time}}</div>
+
+<button class = "btn btn-danger btn-sm"  (click) = "onDelete(product._id)" >Delete</button>
+    </div> `
+})
+
+
+export class ProductComponent{
+    @Input()
+    product:any;
+
+@Output()
+notify : EventEmitter<any>;
+
+constructor(private svc: ProductService){
+    this.notify = new EventEmitter();
+}
+
+   // getRelativeTime(date){
+     //   return moment(date).fromNow();
+       // }
+
+onDelete(id){
+    //console.log(id);
+ this.svc.delete(id)
+ .subscribe(res=> this.notify.emit(),err =>console.log(err));
+    
+}
+
+}
+
+
+
+////////product-ist.component
+
+
+
+
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import * as moment from'moment';
+import { ProductService } from '../services/product.service';
+
+
+@Component({
+    selector:"app-product",
+    template:`
+    <div class="card">
+    <div class="card-body">
+    <img class="img img-thumbnail" width="120" height = "120"[src]="product.image"/>
+    <a routerLink="/products/{{product._id}}"> <h3 class="card-title"> {{product.brand | uppercase}}{{product.model | lowercase}}</h3></a>
+    <b>{{product.price | currency}}</b>
+    <div >InStock:<input type="checkbox" disabled="true"[checked]="product.instock">
+    <div>{{product.lastUpdated | date:'MMM-dd-yyyy hh:mm:ss a'}}</div>
+    <div>{{product.lastUpdated | time}}</div>
+
+<button class = "btn btn-danger btn-sm"  (click) = "onDelete(product._id)" >Delete</button>
+    </div> `
+})
+
+
+export class ProductComponent{
+    @Input()
+    product:any;
+
+@Output()
+notify : EventEmitter<any>;
+
+constructor(private svc: ProductService){
+    this.notify = new EventEmitter();
+}
+
+   // getRelativeTime(date){
+     //   return moment(date).fromNow();
+       // }
+
+onDelete(id){
+    //console.log(id);
+ this.svc.delete(id)
+ .subscribe(res=> this.notify.emit(),err =>console.log(err));
+    
+}
+
+}
+
+
+
+///////product.service.ts
+
+
+
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map , retry} from 'rxjs/operators';
+import { pipe, Observable } from 'rxjs';
+
+export class ProductService{
+    // private http:HttpClient;
+
+    constructor(private http:HttpClient){ //dependancy injection
+           
+     //   this.http=http;
+
+    }
+    get():Observable<any>
+    
+    {
+        return this.http.get("http://exp-rest-api.herokuapp.com/api/products");
+        pipe(map(res=>res['data']));
+    }
+
+    getById(id:string):Observable<any> {
+        return this.http.get('http://exp-rest-api.herokuapp.com/api/products/'+ id);
+    }
+
+save (product:any):Observable<any>{
+    var frmData:FormData=new FormData();
+    for (var key in product){
+        frmData.append(key,product[key]);
+    }
+return this.http.post('http://exp-rest-api.herokuapp.com/api/products',frmData,{headers:{}});
+}
+
+delete(id:string):Observable<any>{
+
+    return this.http.delete('http://exp-rest-api.herokuapp.com/api/products/'+ id)
+}
+}
+
+
+///////new-product.component.ts
+
+
+
+import { Component } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { ProductService } from '../services/product.service';
+import { ConsoleLogger } from '../services/console.logger';
+
+@Component({
+    selector:'app-product-list',
+    template:`
+    
+    <div class ="container">
+    <h1>Product List</h1>
+<button routerLink="/products/new"class="btn btn-primary">Add New Product</button>   
+&nbsp;&nbsp;
+<button routerLink="/products/reactive-form"class="btn btn-primary">Reactive Form</button>
+
+<div *ngFor="let product of products">
+<app-product [product]="product" (notify)="onNotified()"></app-product>
+    </div>
+    </div>`
+
+})
+
+export class ProductListComponent{
+    products : any;
+    
+
+    constructor(svc : ProductService, Logger:ConsoleLogger){
+        Logger.warn("loading data");
+//Http.get("http://exp-rest-api.herokuapp.com/api/products")
+//var svc = new ProductService(Http);  
+svc.get()
+.subscribe(res=>this.products=res["data"],err=>console.log(err));
+        Logger.log("loaded");   
+    }
+}
+
+
+
+
